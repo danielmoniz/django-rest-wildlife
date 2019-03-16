@@ -15,9 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
-# from rest_framework import routers, serializers, viewsets
+from rest_framework import routers, serializers, viewsets
+
+from animals.models import Animal
+
+
+class AnimalSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Animal
+        fields = ('species', 'population', 'region', 'diet_classification')
+
+
+class AnimalViewSet(viewsets.ModelViewSet):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+
+
+router = routers.DefaultRouter()
+router.register('animals', AnimalViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
+    path('', include(router.urls)),
+    # path('api-auth/', include('rest_framework.urls')),
 ]
